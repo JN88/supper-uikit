@@ -9002,10 +9002,10 @@ a.uk-thumbnail:focus {
   border-bottom-color: transparent;
   border-right-color: #333;
 }
-.abc {
-  color: red;
-  font-size: 11px;
-  line-height: 1.2;
+.box {
+  height: 50px;
+  width: 100%;
+  background-color: #e2e2e2;
 }
 /* Small devices (phones, 480px and up) */
 /* Small devices (tablets, 768px and up) */
@@ -10042,4 +10042,3 @@ a.uk-thumbnail:focus {
     white-space: nowrap!important;
   }
 }
-/*# sourceMappingURL=style.css.map */
