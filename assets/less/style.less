@@ -7,12 +7,12 @@
 // The first we can import UIkit core
 @import "common/_uikit.less";
 
-// Let's remove comment "//"" for theme you want use
-//@import "_uikit.default.less";
-//@import "_uikit.gradient.less";
-@import "common/_uikit.almost-flat.less";
+// Let's remove comment "//" for theme you want use
+//@import "themes/_uikit.default.less";
+//@import "themes/_uikit.gradient.less";
+@import "themes/_uikit.almost-flat.less";
 
-// Variables : You can override all UIkit's variable or define the new variables in _variables.less below.
+// Variables : You can override all UIkit's variable or define the new variables in file _variables.less below.
 @import "common/_variables.less";
 
 // Mixins: Let's write your variable in file _mixins.less below.
@@ -20,7 +20,9 @@
 
 // Main Style: All your define style need write in file _main.less
 // With the big project you can split to more file like as: _common.less, _module.less, _responsive.less and so on
+@import "common/_common.less";
 @import "common/_main.less";
+@import "common/_responsive.less";
 
 // My Utitilies Style: You can define utilities class to quick control Style in file _utilities.less
 @import "common/_utilities.less";

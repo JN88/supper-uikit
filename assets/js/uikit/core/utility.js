@@ -7,7 +7,8 @@
     UI.component('stackMargin', {
 
         defaults: {
-            'cls': 'uk-margin-small-top'
+            cls: 'uk-margin-small-top',
+            rowfirst: false
         },
 
         boot: function() {
@@ -17,10 +18,10 @@
 
                 UI.$("[data-uk-margin]", context).each(function() {
 
-                    var ele = UI.$(this), obj;
+                    var ele = UI.$(this);
 
                     if (!ele.data("stackMargin")) {
-                        obj = UI.stackMargin(ele, UI.Utils.options(ele.attr("data-uk-margin")));
+                        UI.stackMargin(ele, UI.Utils.options(ele.attr("data-uk-margin")));
                     }
                 });
             });
@@ -29,8 +30,6 @@
         init: function() {
 
             var $this = this;
-
-            this.columns = [];
 
             UI.$win.on('resize orientationchange', (function() {
 
@@ -46,10 +45,6 @@
                 return UI.Utils.debounce(fn, 20);
             })());
 
-            UI.$html.on("changed.uk.dom", function(e) {
-                $this.process();
-            });
-
             this.on("display.uk.check", function(e) {
                 if (this.element.is(":visible")) this.process();
             }.bind(this));
@@ -59,17 +54,33 @@
 
         process: function() {
 
-            this.columns = this.element.children();
+            var $this = this, columns = this.element.children();
 
-            UI.Utils.stackMargin(this.columns, this.options);
+            UI.Utils.stackMargin(columns, this.options);
 
-            return this;
-        },
+            if (!this.options.rowfirst || !columns.length) {
+                return this;
+            }
 
-        revert: function() {
-            this.columns.removeClass(this.options.cls);
+            // Mark first column elements
+            var group = {}, minleft = false;
+
+            columns.removeClass(this.options.rowfirst).each(function(offset, $ele){
+
+                $ele = UI.$(this);
+
+                if (this.style.display != 'none') {
+                    offset = $ele.offset().left;
+                    ((group[offset] = group[offset] || []) && group[offset]).push(this);
+                    minleft = minleft === false ? offset : Math.min(minleft, offset);
+                }
+            });
+
+            UI.$(group[minleft]).addClass(this.options.rowfirst);
+
             return this;
         }
+
     });
 
 
@@ -102,7 +113,7 @@
 
                         var ele = UI.$(this), obj;
 
-                        if (!ele.data("responsiveIframe")) {
+                        if (!ele.data("responsiveElement")) {
                             obj = UI.responsiveElement(ele, {});
                         }
                     });
@@ -151,30 +162,41 @@
             'cls': 'uk-margin-small-top'
         }, options);
 
-        options.cls = options.cls;
-
         elements = UI.$(elements).removeClass(options.cls);
 
-        var skip         = false,
-            firstvisible = elements.filter(":visible:first"),
-            offset       = firstvisible.length ? (firstvisible.position().top + firstvisible.outerHeight()) - 1 : false; // (-1): weird firefox bug when parent container is display:flex
+        var min = false;
 
-        if (offset === false) return;
+        elements.each(function(offset, height, pos, $ele){
 
-        elements.each(function() {
+            $ele   = UI.$(this);
 
-            var column = UI.$(this);
+            if ($ele.css('display') != 'none') {
 
-            if (column.is(":visible")) {
+                offset = $ele.offset();
+                height = $ele.outerHeight();
+                pos    = offset.top + height;
 
-                if (skip) {
-                    column.addClass(options.cls);
-                } else {
+                $ele.data({
+                    'ukMarginPos': pos,
+                    'ukMarginTop': offset.top
+                });
 
-                    if (column.position().top >= offset) {
-                        skip = column.addClass(options.cls);
-                    }
+                if (min === false || (offset.top < min.top) ) {
+
+                    min = {
+                        top  : offset.top,
+                        left : offset.left,
+                        pos  : pos
+                    };
                 }
+            }
+
+        }).each(function($ele) {
+
+            $ele   = UI.$(this);
+
+            if ($ele.css('display') != 'none' && $ele.data('ukMarginTop') > min.top && $ele.data('ukMarginPos') > min.pos) {
+                $ele.addClass(options.cls);
             }
         });
     };

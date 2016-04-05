@@ -87,7 +87,7 @@
                 if ($this.element.is(":visible"))  $this.updateLayout();
             });
 
-            UI.$html.on("changed.uk.dom", function(e) {
+            UI.domObserve(this.element, function(e) {
                 $this.updateLayout();
             });
 
@@ -226,6 +226,10 @@
             this.currentfilter = filter;
 
             filter = filter || [];
+
+            if (typeof(filter) === 'number') {
+                filter = filter.toString();
+            }
 
             if (typeof(filter) === 'string') {
                 filter = filter.split(/,/).map(function(item){ return item.trim(); });
