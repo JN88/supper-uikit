@@ -9077,9 +9077,6 @@ a.uk-thumbnail:focus {
   border-right-color: #333;
 }
 /* HOOK COMMONS STYLE */
-body {
-  background-color: yellow;
-}
 /* Small devices (phones, 480px and up) */
 @media (min-width: 480px) {
 }
