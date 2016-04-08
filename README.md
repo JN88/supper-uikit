@@ -3,4 +3,4 @@ UIkit Verison: 2.26.1
 
 
 npm install -g gulp
-gulp serve
+gulp watch
