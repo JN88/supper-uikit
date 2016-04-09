@@ -72,7 +72,7 @@ gulp.task('browser-sync', function() {
 // WATCH TASK
 // /////////////////////////////////////////////
 gulp.task('watch', ['build-html','browser-sync'], function () {
-    gulp.watch('./source/*.html', ['build-html']);
+    gulp.watch('./source/**/*.html', ['build-html']);
     gulp.watch('./assets/less/**/*.less', ['build-css']);
     gulp.watch('./assets/less/**/*.less', ['build-css']);
     //gulp.watch("./*.html").on('change', browserSync.reload);
