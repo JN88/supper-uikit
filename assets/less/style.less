@@ -12,17 +12,10 @@
 //@import "themes/_uikit.gradient.less";
 @import "themes/_uikit.almost-flat.less";
 
-// Variables : You can override all UIkit's variable or define the new variables in file _variables.less below.
-@import "common/_variables.less";
-
-// Mixins: Let's write your variable in file _mixins.less below.
-@import "common/_mixins.less";
-
-// Main Style: All your define style need write in file _main.less
-// With the big project you can split to more file like as: _common.less, _module.less, _responsive.less and so on
-@import "common/_common.less";
-@import "common/_main.less";
-@import "common/_responsive.less";
-
-// My Utitilies Style: You can define utilities class to quick control Style in file _utilities.less
-@import "common/_utilities.less";
+@import "common/_variables.less";						// My Variables
+@import "common/_mixins.less";							// My Mixins
+@import "common/_sprite.less";							// This file was craeted by gulp.spritesmith
+@import "common/_common.less";							// Common style
+@import "common/_main.less";							// Main style
+@import "common/_utilities.less";						// Utilities Style
+@import "common/_responsive.less";						// Responsive style

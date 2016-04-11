@@ -11,13 +11,17 @@ var gutil = require('gulp-util');
 var rename = require('gulp-rename');
 var includeHTML = require('gulp-html-tag-include');
 var browserSync = require('browser-sync').create();
+var spritesmith = require('gulp.spritesmith');
+var merge = require('merge-stream');
+var imagemin = require('gulp-imagemin');
+var buffer = require('vinyl-buffer');
 
 // /////////////////////////////////////////////
 // Build CSS Task
 // /////////////////////////////////////////////
 gulp.task('build-css', function () {
-    // Buil CSS
-    return gulp.src(['./assets/less/**/*.less', '!./assets/less/**/_*.less'])
+        // Buil CSS
+        return gulp.src(['./assets/less/**/*.less', '!./assets/less/**/_*.less'])
         .pipe(plumber())
         .pipe(less({
             sourceMap: {
@@ -27,14 +31,14 @@ gulp.task('build-css', function () {
         .pipe(browserSync.stream())
         .pipe(gulp.dest('./assets/css')).on('error', gutil.log)
 
-});
+    });
 
 // /////////////////////////////////////////////
 // Minify CSS Task
 // /////////////////////////////////////////////
 gulp.task('minify-css', function() {
-    // Minify CSS
-    return gulp.src(['./assets/css/**/*.css', '!assets/css/**/*.min.css'])
+        // Minify CSS
+        return gulp.src(['./assets/css/**/*.css', '!assets/css/**/*.min.css'])
         .pipe(plumber())
         .pipe(cssmin({
             keepSpecialComments: false,
@@ -44,18 +48,44 @@ gulp.task('minify-css', function() {
             suffix: '.min'
         }))
         .pipe(gulp.dest('./assets/css')).on('error', gutil.log);
-});
+    });
 
 // /////////////////////////////////////////////
 // BUILD HTML TASK
 // /////////////////////////////////////////////
 gulp.task('build-html', function() {
     return gulp.src('./source/*.html')
-        .pipe(includeHTML())
-        .pipe(gulp.dest('./'))
-        .pipe(browserSync.stream());
+    .pipe(includeHTML())
+    .pipe(gulp.dest('./'))
+    .pipe(browserSync.stream());
 });
 
+// /////////////////////////////////////////////
+// SPRITE IMAGES TASK
+// /////////////////////////////////////////////
+gulp.task('sprite', function () {
+
+    // Generate our spritesheet
+    var spriteData = gulp.src('./assets/images/sprite/*.png')
+    .pipe(spritesmith({
+        imgName: 'sprite.png',
+        cssName: '_sprite.less',
+        imgPath: '../images/sprite.png',
+        padding: 2
+    }));
+
+    // Pipe image stream through image optimizer and onto disk
+    var imgStream = spriteData.img
+        .pipe(buffer())
+    .pipe(imagemin())
+        .pipe(gulp.dest('./assets/images/'))
+        .pipe(browserSync.stream());
+
+    // Pipe CSS stream through CSS optimizer and onto disk
+    var cssStream = spriteData.css.pipe(gulp.dest('./assets/less/common/'));
+
+    return merge(imgStream, cssStream);
+});
 
 // /////////////////////////////////////////////
 // Browser Sync Task
@@ -71,14 +101,14 @@ gulp.task('browser-sync', function() {
 // /////////////////////////////////////////////
 // WATCH TASK
 // /////////////////////////////////////////////
-gulp.task('watch', ['build-html','browser-sync'], function () {
+gulp.task('watch', ['build-html', 'sprite','browser-sync'], function () {
     gulp.watch('./source/**/*.html', ['build-html']);
     gulp.watch('./assets/less/**/*.less', ['build-css']);
-    gulp.watch('./assets/less/**/*.less', ['build-css']);
-    //gulp.watch("./*.html").on('change', browserSync.reload);
+    gulp.watch('assets/images/sprite/**/*.png', ['sprite']);
+        //gulp.watch("./*.html").on('change', browserSync.reload);
 });
 
 // /////////////////////////////////////////////
 // DEfAULT TASK
 // /////////////////////////////////////////////
-gulp.task('default', ['build-html', 'build-css', 'minify-css', 'watch']);
+gulp.task('default', ['build-html', 'build-css', 'minify-css', 'sprite', 'watch']);
